@@ -31,5 +31,5 @@ ssh ${dest_ip} 'mkdir -p /backup'
 scp -r /${path}/${dest} ${dest_ip}:${path}
 
 # 删除 15 天前的数据
-find ${path} -mtime +15 | xargs rm -rf
+find ${path} -mtime +3 | xargs rm -rf
 ssh ${dest_ip} 'find /backup -mtime +15 | xargs rm -rf'
