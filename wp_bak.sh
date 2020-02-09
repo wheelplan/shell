@@ -15,7 +15,7 @@ path=/backup
 host=`hostname`
 ip=`curl ifconfig.me -s`
 date=`date +%F`
-dest=${host}_${ip}_${date}
+dest=${host}_${ip}_${date}_wp
 dest_ip=193.112.70.157
 
 # 创建备份目录
@@ -23,7 +23,7 @@ mkdir -p ${path}/${dest}
 
 # 打包备份文件
 tar zcf ${path}/${dest}/nginx_conf.tar.gz /etc/nginx &> /dev/null
-tar zcf ${path}/${dest}/www_code.tar.gz /www/ &> /dev/null
+tar zcf ${path}/${dest}/www_code.tar.gz /www/wordpress/ &> /dev/null
 mysqldump -uroot -plinux --databases wordpress > ${path}/${dest}/wp.sql
 
 # 推送至目标服务器
