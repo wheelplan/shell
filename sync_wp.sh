@@ -17,9 +17,9 @@ rsync -av /www/wordpress/wp-content/ 193.112.70.157:/share/pv-wordpress/wp-conte
 mysqldump -uroot -plinux --databases wordpress > /tmp/wp.sql
 mysql -uroot -plinux -h 193.112.70.157 < /tmp/wp.sql
 mysql -uroot -plinux -h 193.112.70.157 -e "use wordpress;\
-UPDATE wp_options SET option_value = REPLACE(option_value, 'https://rocc.top', 'http://123.207.124.79:511') WHERE option_name = 'home' OR option_name = 'siteurl';\
-UPDATE wp_posts SET post_content = REPLACE(post_content, 'https://rocc.top' , 'http://123.207.124.79:511');\
-UPDATE wp_posts SET guid = REPLACE(guid, 'https://rocc.top' ,'http://123.207.124.79:511');"
+UPDATE wp_options SET option_value = REPLACE(option_value, 'https://rocc.top', 'http://106.52.20.164:511') WHERE option_name = 'home' OR option_name = 'siteurl';\
+UPDATE wp_posts SET post_content = REPLACE(post_content, 'https://rocc.top' , 'http://106.52.20.164:511');\
+UPDATE wp_posts SET guid = REPLACE(guid, 'https://rocc.top' ,'http://106.52.20.164:511');"
 
 pod=`ssh 193.112.70.157 kubectl get po | awk '/wordpress-mysql/{print $1}'`
 ssh 193.112.70.157 kubectl delete po ${pod}
