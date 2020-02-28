@@ -1,5 +1,7 @@
-aohup masterha_manager --conf=/etc/mha/app1.cnf --remove_dead_master_conf --ignore_last_failover < /dev/null > /etc/mha/app1/manager.log 2>&1 &
-utomatic recovery of MHA cluster
+#!/bin/bash
+
+# Pragram:
+#      Automatic recovery of MHA cluster
 
 # History:
 #        2020-02-27    Alan        First release
