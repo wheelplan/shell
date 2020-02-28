@@ -1,12 +1,18 @@
 #!/bin/bash
 
+# Pragram:
+#      Jenkins_test
+
+# History:
+#        2020-01-11    Alan        First release
+
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin
+
+export PATH
 
 web_dir=/usr/share/nginx
 
 web_ip=106.52.20.164
-
-
-
 
 
 tar zcf /tmp/${BUILD_ID}_web.tar.gz *
