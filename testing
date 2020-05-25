@@ -1,0 +1,89 @@
+# 搭建一个支持搜索的 Nginx 目录下载站点
+
+
+
+```bash
+# 配置 nginx 源
+cat > /etc/yum.repos.d/nginx.repo << 'EOF'
+[nginx-stable]
+name=nginx stable repo
+baseurl=http://nginx.org/packages/centos/$releasever/$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=https://nginx.org/keys/nginx_signing.key
+module_hotfixes=true
+
+[nginx-mainline]
+name=nginx mainline repo
+baseurl=http://nginx.org/packages/mainline/centos/$releasever/$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=https://nginx.org/keys/nginx_signing.key
+module_hotfixes=true
+EOF
+
+# 安装 nginx
+yum install nginx -y
+
+# 下载 nginx 源码包
+cd /tmp
+wget https://download.rocc.top/nginx/nginx-1.17.10.tar.gz
+tar xf nginx-1.17.10.tar.gz
+
+# 安装依赖包
+yum install git gcc-c++ pcre-devel zlib-devel
+
+# 下载 fancyindex 美化模块
+git clone https://github.com/aperezdc/ngx-fancyindex.git /tmp/fancyindex
+
+# 重新编译安装 nginx
+cd nginx-1.17.10
+./configure --prefix=/usr/share/nginx --add-module=../fancyindex
+make && make install
+
+# 下载主题包
+cd /tmp
+git clone https://github.com/Naereen/Nginx-Fancyindex-Theme.git
+mkdir /www/download -p
+
+# 将 Nginx-Fancyindex-Theme-light 主题目录复制到站点根目录
+cp -r Nginx-Fancyindex-Theme/Nginx-Fancyindex-Theme-light/ /www/download
+
+# 添加 nginx 子配置文件
+cat > /etc/nginx/conf.d/download.conf << 'EOF'
+server {
+  listen          80;
+  server_name     download.rocc.top;
+
+location / {
+    root            /www/download;
+    autoindex       on;
+    autoindex_localtime on;
+    autoindex_exact_size off;
+    autoindex_format html;
+    charset utf-8,gbk;
+    fancyindex on;
+    fancyindex_exact_size off;
+    fancyindex_localtime on;
+    fancyindex_header "/Nginx-Fancyindex-Theme-light/header.html";
+    fancyindex_footer "/Nginx-Fancyindex-Theme-light/footer.html";
+    fancyindex_ignore "Nginx-Fancyindex-Theme-light";
+    fancyindex_name_length 255;
+    if ($request_filename ~* ^.*?\.(txt|doc|pdf|rar|gz|zip|docx|exe|xlsx|ppt|pptx)$)
+    {
+      add_header Content-Disposition attachment;
+    }
+  }
+}
+EOF
+
+# 启动 nginx 服务并加入开机自启
+systemctl enable nginx && systemctl start nginx.service
+```
+
+
+
+```bash
+./configure --prefix=/etc/nginx --add-module=../fancyindex --sbin-path=/usr/sbin/nginx --modules-path=/usr/lib64/nginx/modules --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --user=nginx --group=nginx --with-compat --with-file-aio --with-threads --with-http_addition_module --with-http_auth_request_module --with-http_dav_module --with-http_flv_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-stream --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-cc-opt='-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -m64 -mtune=generic -fPIC' --with-ld-opt='-Wl,-z,relro -Wl,-z,now -pie'
+```
+
